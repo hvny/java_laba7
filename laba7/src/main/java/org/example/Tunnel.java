@@ -1,10 +1,8 @@
 package org.example;
 import java.util.concurrent.Semaphore;
 
-import static org.example.Main.HALF_CARS_COUNT;
-
 public class Tunnel extends Stage{
-    Semaphore smp = new Semaphore(HALF_CARS_COUNT);
+    Semaphore smp = new Semaphore(4);
     public Tunnel(){
         this.length = 80;
         this.description = "Тоннель " + length + " метров";

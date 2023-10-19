@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Race {
-    private ArrayList<Stage> stages;
+    private ArrayList<Stage> stages;  //этапы
     public ArrayList<Stage> getStages (){
         return stages;
     }
