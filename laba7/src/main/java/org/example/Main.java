@@ -1,36 +1,39 @@
 package org.example;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 public class Main {
     public static final int CARS_COUNT = 6;
+
     public static void main(String[] args) {
         System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Подготовка!!!");
+
         Race race = new Race(new Road(60), new Tunnel(), new Road(40));
         Car[] cars = new Car[CARS_COUNT];
-        CountDownLatch startLatch = new CountDownLatch(CARS_COUNT);
-        CountDownLatch finishLatch = new CountDownLatch(CARS_COUNT);
+        CyclicBarrier startCb = new CyclicBarrier(CARS_COUNT + 1);
+        CyclicBarrier finishCb = new CyclicBarrier(CARS_COUNT);
+
+        CountDownLatch cdl = new CountDownLatch(3);
+
         AtomicInteger finishedCars = new AtomicInteger(0);
-        ConcurrentHashMap<String, Integer> finishTimes = new ConcurrentHashMap<>();
 
         for (int i = 0; i < cars.length; i++) {
-            cars[i] = new Car(race, 20 + (int) (Math.random() * 10), startLatch, finishLatch, finishedCars, finishTimes);
+            cars[i] = new Car(race, 100 + (int)(Math.random() * 10), startCb, finishCb, cdl, finishedCars);
         }
 
-        for (int i = 0; i < cars.length; i++) {
-            new Thread(cars[i]).start();
+        for (Car car : cars) {
+            new Thread(car).start();
         }
+
         try {
-            startLatch.await();
+            startCb.await();  // Ожидаем старта всех участников
             System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка началась!!!");
-            finishLatch.await();
-            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");
-        } catch (InterruptedException e) {
+
+            /*cdl.await(); // Ожидаем завершения всех участников
+            System.out.println("ВАЖНОЕ ОБЪЯВЛЕНИЕ >>> Гонка закончилась!!!");*/
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
